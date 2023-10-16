@@ -1,13 +1,29 @@
 package api
 
 import (
-	"Projeect/utils/datasource"
+	"Projeect/api/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	HttpServerPort = ":8080"
+)
+
 func run() error {
-	psql, err := datasource.InitializePSQL()
+	handlers.InitTools()
+
+	e := echo.New()
+	e.Use(middleware.CORS())
+	e.POST("/register", handlers.RegisterHandler)
+	e.GET("/status", handlers.StatusHandler)
+
+	err := e.Start(HttpServerPort)
 	if err != nil {
-		logrus.Fatalf("Error initializing database: %v", err)
+		logrus.Errorf("Error starting http server: %v", err)
 	}
+	logrus.Infof("Server listening on port %s", HttpServerPort)
+
+	return nil
 }

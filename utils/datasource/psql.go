@@ -15,11 +15,11 @@ type PSQL struct {
 }
 
 var (
-	host     = os.Getenv("DB_HOST")
-	port     = os.Getenv("DB_PORT")
-	user     = os.Getenv("DB_USER")
-	password = os.Getenv("DB_PASSWORD")
-	dbname   = os.Getenv("DB_NAME")
+	host     = os.Getenv("PS_HOST")
+	port     = os.Getenv("PS_PORT")
+	user     = os.Getenv("PS_USER")
+	password = os.Getenv("PS_PASSWORD")
+	dbname   = os.Getenv("PS_NAME")
 )
 
 func InitializePSQL() (psql *PSQL, err error) {
@@ -39,7 +39,7 @@ func InitializePSQL() (psql *PSQL, err error) {
 	return &PSQL{db: db}, nil
 }
 
-func (psql *PSQL) saveUser(user model.User) (id string, err error) {
+func (psql *PSQL) SaveUser(user model.User) (id string, err error) {
 	_, err = psql.db.Exec("INSERT INTO users (national_code, name, email, ip, status) VALUES ($1, $2, $3, $4, $5)",
 		user.NationalCode, user.Name, user.Email, user.IPAddress, "pending")
 	return user.NationalCode, err
