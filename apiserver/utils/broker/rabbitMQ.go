@@ -6,13 +6,16 @@ import (
 	"os"
 )
 
+var (
+	rabbitURL = os.Getenv("RB_URL")
+)
+
 type RabbitMQ struct {
 	conn    *amqp.Connection
 	channel *amqp.Channel
 }
 
 func InitRabbitMQ() (mq *RabbitMQ, err error) {
-	rabbitURL := os.Getenv("RB_URL")
 	conn, err := amqp.Dial(rabbitURL)
 	if err != nil {
 		return nil, err

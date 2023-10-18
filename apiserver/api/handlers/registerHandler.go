@@ -5,6 +5,8 @@ import (
 	"Projeect/utils"
 	"Projeect/utils/datasource"
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -16,6 +18,9 @@ const (
 
 func RegisterHandler(c echo.Context) error {
 	var req model.RegisterReq
+	json.Unmarshal([]byte(c.FormValue("info")), &req)
+
+	fmt.Println(req)
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -39,6 +44,22 @@ func RegisterHandler(c echo.Context) error {
 		IPAddress:    req.IPAddress,
 	}
 
+	pic1, err := c.FormFile("pic1")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Image processing failed",
+			"desc":  err.Error(),
+		})
+	}
+
+	pic2, err := c.FormFile("pic2")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Image processing failed",
+			"desc":  err.Error(),
+		})
+	}
+
 	_, err = psql.SaveUser(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
@@ -47,9 +68,9 @@ func RegisterHandler(c echo.Context) error {
 		})
 	}
 
-	uuid1 := utils.EncodeBase64(req.NationalCode) + "@1"
+	uuid1 := utils.EncodeBase64(req.NationalCode) + "_IMAGE_1"
 
-	err = datasource.UploadPic([]byte(req.Pic1), uuid1)
+	err = datasource.UploadPic(pic1, uuid1)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Failed tp push image S3",
@@ -57,9 +78,9 @@ func RegisterHandler(c echo.Context) error {
 		})
 	}
 
-	uuid2 := utils.EncodeBase64(req.NationalCode) + "@2"
+	uuid2 := utils.EncodeBase64(req.NationalCode) + "_IMAGE_1"
 
-	err = datasource.UploadPic([]byte(req.Pic1), uuid2)
+	err = datasource.UploadPic(pic2, uuid2)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Failed to push image S3",

@@ -1,11 +1,11 @@
 package datasource
 
 import (
-	"bytes"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"mime/multipart"
 	"os"
 )
 
@@ -17,7 +17,12 @@ var (
 	s3Endpoint = os.Getenv("S3_ENDPOINT")
 )
 
-func UploadPic(file []byte, fileName string) error {
+func UploadPic(fileHeader *multipart.FileHeader, fileName string) error {
+	file, err := fileHeader.Open()
+	if err != nil {
+		return err
+	}
+
 	curSession, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(accessKey, secretKey, ""),
 		Region:      aws.String(s3Region),
@@ -28,7 +33,7 @@ func UploadPic(file []byte, fileName string) error {
 	_, err = uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(s3Bucket),
 		Key:    aws.String(fileName),
-		Body:   bytes.NewReader(file),
+		Body:   file,
 		ACL:    aws.String("public-read"), // TODO: change the access
 	})
 	if err != nil {

@@ -11,7 +11,7 @@ const (
 	HttpServerPort = ":8080"
 )
 
-func run() error {
+func Run() error {
 	handlers.InitTools()
 
 	e := echo.New()

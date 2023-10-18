@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"os"
 )
@@ -32,7 +33,7 @@ func InitializePSQL() (psql *PSQL, err error) {
 
 	err = db.Ping()
 	if err != nil {
-		logrus.Errorf("database ping has failde: %v", err)
+		logrus.Errorf("database ping has faild: %v", err)
 		return nil, err
 	}
 

@@ -22,10 +22,10 @@ func InitTools() {
 	if err != nil {
 		logrus.Fatalf("Error initializing rabbitMQ: %v", err)
 	}
-	defer func(mq *broker.RabbitMQ) {
-		err := mq.Close()
-		if err != nil {
-			logrus.Errorf("Error closing rabbitMQ: %v", err)
-		}
-	}(rabbitMQ)
+	//defer func(mq *broker.RabbitMQ) {
+	//	err := mq.Close()
+	//	if err != nil {
+	//		logrus.Errorf("Error closing rabbitMQ: %v", err)
+	//	}
+	//}(rabbitMQ)
 }
