@@ -1,18 +1,34 @@
 version: '3'
 services:
-  publisher:
+  apiserver:
     container_name: apiserver
     build:
       context: apiserver
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
-      PS_HOST: postgres
-      PS_PORT: 5432
-      PS_USER: root
-      PS_PASSWORD: root
-      PS_NAME: postgres
+      PS_URI: postgres://avnadmin:AVNS_r5bk62SSBQn99QgS0cX@pg-sahabi-boboy1390-02ae.a.aivencloud.com:21538/defaultdb?sslmode=require
+      S3_BUCKET: mohasebat-alsahabieh
+      S3_REGION: default
+      S3_ENDPOINT: s3.ir-thr-at1.arvanstorage.ir
+      S3_ACCESS_KEY: dbe17ff1-333f-4634-ad02-cb08054e8e04
+      S3_SECRET_KEY: cf2a8e28beb07d3e4f9b261f943970c4dcbc51024d89b0c2ce594178adf1c775
+      RB_URL: amqps://legpjmju:pX5gsesigF3Z9uScpa_nR7d5pSd3Cxk4@cow.rmq2.cloudamqp.com/legpjmju
+
+  authenticator:
+    container_name: authenticator
+    build:
+      context: authenticator
+      dockerfile: Dockerfile
+    environment:
+      PS_URI: postgres://avnadmin:AVNS_r5bk62SSBQn99QgS0cX@pg-sahabi-boboy1390-02ae.a.aivencloud.com:21538/defaultdb?sslmode=require
+      IMAGGA_API_KEY: acc_757f116bcf7afe4
+      IMAGGA_API_SECRET: 3248ebaa40b9151007cb5d26a474327e
+      IMAGGA_FACE_DETECTION_URL: https://api.imagga.com/v2/faces/detections
+      IMAGGA_SIMILARITY_DETECTION_URL: https://api.imagga.com/v2/faces/similarity
+      MAILGUN_DOMAIN: sandboxe56343867f2d4845835722661fe7c86f.mailgun.org
+      MAILGUN_API_KEY: 5a34193fd8294d1717aa1a2b6ded2fb2-3750a53b-b922de03
       S3_BUCKET: mohasebat-alsahabieh
       S3_REGION: default
       S3_ENDPOINT: s3.ir-thr-at1.arvanstorage.ir
@@ -20,39 +36,4 @@ services:
       S3_SECRET_KEY: cf2a8e28beb07d3e4f9b261f943970c4dcbc51024d89b0c2ce594178adf1c775
       RB_URL: amqps://legpjmju:pX5gsesigF3Z9uScpa_nR7d5pSd3Cxk4@cow.rmq2.cloudamqp.com/legpjmju
     depends_on:
-      - postgres
-
-#  listener:
-#    container_name: listener
-#    build:
-#      context: listener
-#      dockerfile: Dockerfile
-#    environment:
-#      DB_HOST: pg
-#      DB_PORT: 5432
-#      DB_USER: root
-#      DB_PASSWORD: root
-#      DB_NAME: image-authenticator
-#      S3_BUCKET: image-authenticator
-#      S3_REGION: default
-#      S3_ENDPOINT: s3.ir-thr-at1.arvanstorage.ir
-#      S3_ACCESS_KEY: 1f587d9d-0f73-44b0-a244-eb65a38b9fb9
-#      S3_SECRET_KEY: ea8f9014e2dba906a1e1d16ced994f0ddb567bee05386ccfb13646e58d41263d
-#      RABBIT_URL: amqps://mihcucyt:XE1vceH1adMHJ1lutXATIm6PI79F7aUl@cow.rmq2.cloudamqp.com/mihcucyt
-#    depends_on:
-#      - pg
-#      - publisher
-
-  postgres:
-    container_name: postgres
-    image: postgres:16
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: image-authenticator
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-volumes:
-  pg_data:
+      - apiserver
