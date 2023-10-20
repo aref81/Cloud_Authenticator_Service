@@ -16,16 +16,11 @@ type PSQL struct {
 }
 
 var (
-	host     = os.Getenv("PS_HOST")
-	port     = os.Getenv("PS_PORT")
-	user     = os.Getenv("PS_USER")
-	password = os.Getenv("PS_PASSWORD")
-	dbname   = os.Getenv("PS_NAME")
+	uri = os.Getenv("PS_URI")
 )
 
 func InitializePSQL() (psql *PSQL, err error) {
-	connConf := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	db, err := sql.Open("postgres", connConf)
+	db, err := sql.Open("postgres", uri)
 	if err != nil {
 		logrus.Errorf("connection to database failed: %v", err)
 		return nil, err
@@ -37,6 +32,14 @@ func InitializePSQL() (psql *PSQL, err error) {
 		return nil, err
 	}
 
+	db.Exec(`create table users (
+    national_code varchar(20) PRIMARY KEY ,
+    name varchar(40),
+    email varchar(50),
+    ip varchar(20),
+    status varchar(50)
+)`)
+
 	return &PSQL{db: db}, nil
 }
 
@@ -46,10 +49,10 @@ func (psql *PSQL) SaveUser(user model.User) (id string, err error) {
 	return user.NationalCode, err
 }
 
-func (psql *PSQL) FetchUser(nationalID string) (*model.User, error) {
+func (psql *PSQL) FetchUser(nationalCode string) (*model.User, error) {
 	var user model.User
 	err := psql.db.QueryRow("SELECT  national_code, name, email, ip, status FROM users WHERE national_code = $1",
-		utils.EncodeBase64(nationalID)).Scan(&user.NationalCode, &user.Name, &user.Email, &user.IPAddress, &user.Status)
+		utils.EncodeBase64(nationalCode)).Scan(&user.NationalCode, &user.Name, &user.Email, &user.IPAddress, &user.Status)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("user not found")

@@ -6,7 +6,6 @@ import (
 	"Projeect/utils/datasource"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -20,7 +19,6 @@ func RegisterHandler(c echo.Context) error {
 	var req model.RegisterReq
 	json.Unmarshal([]byte(c.FormValue("info")), &req)
 
-	fmt.Println(req)
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -78,7 +76,7 @@ func RegisterHandler(c echo.Context) error {
 		})
 	}
 
-	uuid2 := utils.EncodeBase64(req.NationalCode) + "_IMAGE_1"
+	uuid2 := utils.EncodeBase64(req.NationalCode) + "_IMAGE_2"
 
 	err = datasource.UploadPic(pic2, uuid2)
 	if err != nil {

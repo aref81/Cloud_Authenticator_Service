@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	HttpServerPort = ":8080"
+	HttpServerPort = ":8000"
 )
 
 func Run() error {
