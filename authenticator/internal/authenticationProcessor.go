@@ -45,7 +45,7 @@ func processReq(encodedNationalCode string) {
 		if err != nil {
 			logrus.Errorf(err.Error())
 		}
-		logrus.Infof("%s : Accepted", user.NationalCode)
+		logrus.Infof("%s : Accepted : %f", user.NationalCode, score)
 	} else {
 		err := psql.UpdateStatus(user.NationalCode, "rejected")
 		if err != nil {
@@ -55,6 +55,6 @@ func processReq(encodedNationalCode string) {
 		if err != nil {
 			logrus.Errorf(err.Error())
 		}
-		logrus.Infof("%s : Rejected", user.NationalCode)
+		logrus.Infof("%s : Rejected  : %f", user.NationalCode, score)
 	}
 }
